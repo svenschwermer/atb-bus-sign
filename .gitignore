@@ -1,5 +1,5 @@
-/vendor
-bus-sign
+/vendor/
+/bus-sign
 debug
 debug.test
-/.vscode
+/.vscode/

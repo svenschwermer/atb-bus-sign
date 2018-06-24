@@ -62,10 +62,11 @@ func (d *Device) WriteToAll(address, data byte) error {
 
 func (d *Device) Init() error {
 	sequence := []struct{ a, d byte }{
-		{AddressDecodeMode, 0x00}, // No decoding
-		{AddressIntensity, 0x01},  // Minimal intensity
-		{AddressScanLimit, 0x07},  // Scan all digits (0..7)
-		{AddressShutdown, 0x01},   // Normal operation
+		{AddressDecodeMode, 0x00},  // No decoding
+		{AddressIntensity, 0x01},   // Minimal intensity
+		{AddressScanLimit, 0x07},   // Scan all digits (0..7)
+		{AddressDisplayTest, 0x00}, // Disable display test
+		{AddressShutdown, 0x01},    // Normal operation
 	}
 	for _, x := range sequence {
 		if err := d.WriteToAll(x.a, x.d); err != nil {

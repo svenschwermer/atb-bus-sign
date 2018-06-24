@@ -9,13 +9,6 @@ import (
 	"svenschwermer.de/bus-sign/max7219"
 )
 
-/*
-func msgRequestCode(n uint32) uintptr {
-	return uintptr(0x80006B00 + (n * 0x200000))
-	                ---
-}
-*/
-
 func main() {
 	max, err := max7219.Open("/dev/spidev0.1", 4)
 	if err != nil {
