@@ -12,5 +12,5 @@ func TestATB(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(d)
+	t.Log(d.GetString("11", "19"))
 }

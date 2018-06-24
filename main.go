@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"svenschwermer.de/bus-sign/atb"
 	"svenschwermer.de/bus-sign/frame"
 	"svenschwermer.de/bus-sign/max7219"
 )
@@ -26,13 +27,35 @@ func main() {
 		log.Fatal("Failed to initialize MAX7219: ", err)
 	}
 
-	f := frame.New(8, 64)
-	f.Text(0, "abcdefghij")
+	c := make(chan *frame.Frame)
+	go display(max, c)
+	query(c)
+}
+
+func query(c chan<- *frame.Frame) {
+	maskinagentur := atb.BusStop{NodeID: 16011297}
 	for {
-		for i := 0; i <= 32; i++ {
-			sub := f.SubFrame(i, i+31)
+		departures, err := maskinagentur.GetDepartures()
+		if err != nil {
+			log.Print(err)
+		} else {
+			str := departures.GetString("11")
+			c <- frame.FromText(str, 32)
+		}
+		time.Sleep(10 * time.Second)
+	}
+}
+
+func display(max *max7219.Device, c <-chan *frame.Frame) {
+	for f := range c {
+		for i := 32; i < f.Width(); i++ {
+			sub := f.SubFrame(i-32, i)
 			max.Frame(sub.ConcatenateLines())
-			time.Sleep(100 * time.Millisecond)
+			if i == 32 || i == f.Width()-1 {
+				time.Sleep(1 * time.Second)
+			} else {
+				time.Sleep(75 * time.Millisecond)
+			}
 		}
 	}
 }

@@ -6,23 +6,38 @@ import (
 
 // Frame is a collection of lines
 // 1st index: line index
-type Frame [][]byte
+type Frame struct {
+	data  [][]byte
+	width int
+}
 
-func New(lines, columns int) Frame {
-	f := make([][]byte, lines)
-	for i := range f {
-		f[i] = make([]byte, (columns+7)/8)
+func New(lines, columns int) *Frame {
+	data := make([][]byte, lines)
+	for i := range data {
+		data[i] = make([]byte, (columns+7)/8)
 	}
+	return &Frame{data, columns}
+}
+
+func FromText(str string, minimumWidth int) *Frame {
+	width := len(str) * font5x8.width
+	width = max(width, minimumWidth)
+	f := New(font5x8.height, width)
+	f.Text(0, str)
 	return f
 }
 
-func (f Frame) ConcatenateLines() []byte {
-	return bytes.Join(f, []byte{})
+func (f *Frame) Width() int {
+	return f.width
+}
+
+func (f *Frame) ConcatenateLines() []byte {
+	return bytes.Join(f.data, []byte{})
 }
 
 // Modify sets the columns [start, end) with the data provided in lines
 // In "non-full" bytes, the lowermost bits are considered padding
-func (f Frame) Modify(start, end int, lines [][]byte) error {
+func (f *Frame) Modify(start, end int, lines [][]byte) error {
 	for i, srcLine := range lines {
 		srcPos := 0
 		for destPos := start; destPos < end; {
@@ -36,7 +51,7 @@ func (f Frame) Modify(start, end int, lines [][]byte) error {
 			destBytePos := destPos % 8
 			destByteIdx := destPos / 8
 			destBits := 8 - destBytePos
-			destByte := f[i][destByteIdx]
+			destByte := f.data[i][destByteIdx]
 
 			bits := min(srcBits, destBits)
 			mask := byte((1 << uint(bits)) - 1)
@@ -46,7 +61,7 @@ func (f Frame) Modify(start, end int, lines [][]byte) error {
 			srcByte = (srcByte >> srcShift) & mask
 			destByte &^= mask << destShift   // clear bits in dest byte
 			destByte |= srcByte << destShift // apply bits from src byte
-			f[i][destByteIdx] = destByte
+			f.data[i][destByteIdx] = destByte
 
 			srcPos += bits
 			destPos += bits
@@ -55,7 +70,7 @@ func (f Frame) Modify(start, end int, lines [][]byte) error {
 	return nil
 }
 
-func (f Frame) Text(pos int, str string) error {
+func (f *Frame) Text(pos int, str string) error {
 	for _, c := range str {
 		f.Modify(pos, pos+font5x8.width, font5x8.Get(c))
 		pos += font5x8.width
@@ -63,30 +78,37 @@ func (f Frame) Text(pos int, str string) error {
 	return nil
 }
 
-func (f Frame) SubFrame(start, end int) Frame {
+func (f *Frame) SubFrame(start, end int) *Frame {
 	width := end - start
-	out := New(len(f), width+8)
-	for i := range f {
+	out := New(len(f.data), width+8) // allow for shifting room
+	for i := range f.data {
 		shift := uint(start)
-		copy(out[i], f[i][shift/8:len(f[i])]) // drop whole leading bytes
+		copy(out.data[i], f.data[i][shift/8:len(f.data[i])]) // drop whole leading bytes
 		shift %= 8
 		if shift > 0 {
 			mask := byte((1 << shift) - 1)
-			for j, b := range out[i] {
-				out[i][j] = b << shift
+			for j, b := range out.data[i] {
+				out.data[i][j] = b << shift
 				if j > 0 {
 					overflow := (b >> (8 - shift)) & mask
-					out[i][j-1] |= overflow
+					out.data[i][j-1] |= overflow
 				}
 			}
 		}
-		out[i] = out[i][0 : (width+7)/8] // drop whole trailing bytes
+		out.data[i] = out.data[i][0 : (width+7)/8] // drop whole trailing bytes
 	}
 	return out
 }
 
 func min(a, b int) int {
 	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int) int {
+	if a > b {
 		return a
 	}
 	return b
