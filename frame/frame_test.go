@@ -43,6 +43,12 @@ func TestMovingBar(t *testing.T) {
 	}
 }
 
+func TestFrameText(t *testing.T) {
+	f := frame.New(8, 32)
+	f.Text(0, "11 5m")
+	t.Logf("11 5m:\n%s", drawFrame(f))
+}
+
 func drawFrame(f frame.Frame) (s string) {
 	for i := 0; i < len(f[0])*8; i++ {
 		s += fmt.Sprintf("%2d ", i)

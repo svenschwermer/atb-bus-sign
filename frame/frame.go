@@ -55,6 +55,14 @@ func (f Frame) Modify(start, end int, lines [][]byte) error {
 	return nil
 }
 
+func (f Frame) Text(pos int, str string) error {
+	for _, c := range str {
+		f.Modify(pos, pos+font5x8.width, font5x8.Get(c))
+		pos += font5x8.width
+	}
+	return nil
+}
+
 func min(a, b int) int {
 	if a < b {
 		return a

@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"svenschwermer.de/bus-sign/frame"
 	"svenschwermer.de/bus-sign/max7219"
@@ -27,26 +26,6 @@ func main() {
 	}
 
 	f := frame.New(8, 32)
-	mod := [][]byte{{0x40, 0x00}, {0x20, 0x00}, {0x10, 0x00}, {0x08, 0x00}, {0x04, 0x00}, {0x02, 0x00}, {0x01, 0x00}, {0x00, 0x80}}
-	for {
-		f[0][0] = 0x80
-		f[1][0] = 0x40
-		f[2][0] = 0x20
-		f[3][0] = 0x10
-		f[4][0] = 0x08
-		f[5][0] = 0x04
-		f[6][0] = 0x02
-		f[7][0] = 0x01
-		for i := range f {
-			f[i][3] = 0x00
-		}
-		max.Frame(f.ConcatenateLines())
-		time.Sleep(25 * time.Millisecond)
-
-		for i := 0; i < 24; i++ {
-			f.Modify(i, i+9, mod)
-			max.Frame(f.ConcatenateLines())
-			time.Sleep(25 * time.Millisecond)
-		}
-	}
+	f.Text(0, "11 ~5")
+	max.Frame(f.ConcatenateLines())
 }
