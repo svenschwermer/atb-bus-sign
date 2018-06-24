@@ -49,6 +49,17 @@ func TestFrameText(t *testing.T) {
 	t.Logf("11 5m:\n%s", drawFrame(f))
 }
 
+func TestSubFrame(t *testing.T) {
+	f := frame.New(8, 32)
+	f.Text(0, "abcde")
+
+	for i := 0; i <= 24; i++ {
+		t.Logf("Original:\n%s", drawFrame(f))
+		sub := f.SubFrame(i, i+8)
+		t.Logf("Pos %d:\n%s", i, drawFrame(sub))
+	}
+}
+
 func drawFrame(f frame.Frame) (s string) {
 	for i := 0; i < len(f[0])*8; i++ {
 		s += fmt.Sprintf("%2d ", i)
@@ -58,7 +69,7 @@ func drawFrame(f frame.Frame) (s string) {
 		for _, pixels := range line {
 			for i := 7; i >= 0; i-- {
 				if pixels&(1<<uint(i)) != 0x00 {
-					s += " # "
+					s += " █ "
 				} else {
 					s += " . "
 				}

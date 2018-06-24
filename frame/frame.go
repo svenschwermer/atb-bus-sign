@@ -63,6 +63,28 @@ func (f Frame) Text(pos int, str string) error {
 	return nil
 }
 
+func (f Frame) SubFrame(start, end int) Frame {
+	width := end - start
+	out := New(len(f), width+8)
+	for i := range f {
+		shift := uint(start)
+		copy(out[i], f[i][shift/8:len(f[i])]) // drop whole leading bytes
+		shift %= 8
+		if shift > 0 {
+			mask := byte((1 << shift) - 1)
+			for j, b := range out[i] {
+				out[i][j] = b << shift
+				if j > 0 {
+					overflow := (b >> (8 - shift)) & mask
+					out[i][j-1] |= overflow
+				}
+			}
+		}
+		out[i] = out[i][0 : (width+7)/8] // drop whole trailing bytes
+	}
+	return out
+}
+
 func min(a, b int) int {
 	if a < b {
 		return a

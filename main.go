@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"svenschwermer.de/bus-sign/frame"
 	"svenschwermer.de/bus-sign/max7219"
@@ -25,7 +26,13 @@ func main() {
 		log.Fatal("Failed to initialize MAX7219: ", err)
 	}
 
-	f := frame.New(8, 32)
-	f.Text(0, "11 ~5")
-	max.Frame(f.ConcatenateLines())
+	f := frame.New(8, 64)
+	f.Text(0, "abcdefghij")
+	for {
+		for i := 0; i <= 32; i++ {
+			sub := f.SubFrame(i, i+31)
+			max.Frame(sub.ConcatenateLines())
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
 }
