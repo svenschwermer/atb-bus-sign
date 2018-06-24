@@ -2,6 +2,7 @@ package frame
 
 import (
 	"bytes"
+	"fmt"
 )
 
 // Frame is a collection of lines
@@ -80,10 +81,10 @@ func (f *Frame) Text(pos int, str string) error {
 
 func (f *Frame) SubFrame(start, end int) *Frame {
 	width := end - start
-	out := New(len(f.data), width+8) // allow for shifting room
+	out := f.Duplicate()
 	for i := range f.data {
 		shift := uint(start)
-		copy(out.data[i], f.data[i][shift/8:len(f.data[i])]) // drop whole leading bytes
+		out.data[i] = out.data[i][shift/8 : len(out.data[i])] // drop whole leading bytes
 		shift %= 8
 		if shift > 0 {
 			mask := byte((1 << shift) - 1)
@@ -98,6 +99,36 @@ func (f *Frame) SubFrame(start, end int) *Frame {
 		out.data[i] = out.data[i][0 : (width+7)/8] // drop whole trailing bytes
 	}
 	return out
+}
+
+func (f *Frame) Duplicate() *Frame {
+	out := New(len(f.data), 2*f.width)
+	for i := range f.data {
+		l := len(f.data[i])
+		copy(out.data[i][0:l], f.data[i][0:l])
+		out.Modify(f.width, 2*f.width, f.data)
+	}
+	return out
+}
+
+func (f *Frame) String() (s string) {
+	for i := 0; i < f.width; i++ {
+		s += fmt.Sprintf("%2d ", i)
+	}
+	s += "\n"
+	for _, line := range f.data {
+		for _, pixels := range line {
+			for i := 7; i >= 0; i-- {
+				if pixels&(1<<uint(i)) != 0x00 {
+					s += " █ "
+				} else {
+					s += " . "
+				}
+			}
+		}
+		s += "\n"
+	}
+	return
 }
 
 func min(a, b int) int {

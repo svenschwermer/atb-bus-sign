@@ -36,26 +36,34 @@ func query(c chan<- *frame.Frame) {
 	maskinagentur := atb.BusStop{NodeID: 16011297}
 	for {
 		departures, err := maskinagentur.GetDepartures()
+		var str string
 		if err != nil {
 			log.Print(err)
+			str = "ERROR: " + err.Error()
 		} else {
-			str := departures.GetString("11")
-			c <- frame.FromText(str, 32)
+			str = departures.GetString("11", "19")
 		}
+		str += " | "
+		c <- frame.FromText(str, 32)
 		time.Sleep(10 * time.Second)
 	}
 }
 
 func display(max *max7219.Device, c <-chan *frame.Frame) {
-	for f := range c {
-		for i := 32; i < f.Width(); i++ {
-			sub := f.SubFrame(i-32, i)
-			max.Frame(sub.ConcatenateLines())
-			if i == 32 || i == f.Width()-1 {
-				time.Sleep(1 * time.Second)
-			} else {
-				time.Sleep(75 * time.Millisecond)
+	f := frame.FromText("waiting...  ", 32)
+	for {
+		select {
+		case newFrame, ok := <-c:
+			if !ok {
+				return
 			}
+			f = newFrame
+		default:
+		}
+		for i := 0; i < f.Width(); i++ {
+			sub := f.SubFrame(i, i+32)
+			max.Frame(sub.ConcatenateLines())
+			time.Sleep(50 * time.Millisecond)
 		}
 	}
 }
