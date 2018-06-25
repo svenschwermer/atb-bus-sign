@@ -3,6 +3,8 @@ package frame_test
 import (
 	"fmt"
 	"testing"
+
+	"svenschwermer.de/bus-sign/frame"
 )
 
 // vertical input font, bottom-left oriented
@@ -124,4 +126,9 @@ func TestConvertFont(t *testing.T) {
 		}
 		fmt.Printf("}, // %v (0x%02x)\n", string(i+0x20), i+0x20)
 	}
+}
+
+func TestNorwegianChars(t *testing.T) {
+	f := frame.FromText("Text: æøåÆØÅ", 32)
+	t.Logf("Norwegian chars:\n%s", f.CompactString())
 }

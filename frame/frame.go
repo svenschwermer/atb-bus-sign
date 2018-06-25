@@ -3,6 +3,7 @@ package frame
 import (
 	"bytes"
 	"fmt"
+	"unicode/utf8"
 )
 
 // Frame is a collection of lines
@@ -21,7 +22,7 @@ func New(lines, columns int) *Frame {
 }
 
 func FromText(str string, minimumWidth int) *Frame {
-	width := len(str) * font5x8.width
+	width := utf8.RuneCountInString(str) * font5x8.width
 	width = max(width, minimumWidth)
 	f := New(font5x8.height, width)
 	f.Text(0, str)
@@ -98,6 +99,7 @@ func (f *Frame) SubFrame(start, end int) *Frame {
 		}
 		out.data[i] = out.data[i][0 : (width+7)/8] // drop whole trailing bytes
 	}
+	out.width = width
 	return out
 }
 
@@ -117,12 +119,28 @@ func (f *Frame) String() (s string) {
 	}
 	s += "\n"
 	for _, line := range f.data {
-		for _, pixels := range line {
-			for i := 7; i >= 0; i-- {
-				if pixels&(1<<uint(i)) != 0x00 {
+		for j, pixels := range line {
+			for i := 0; i < 8 && j*8+i < f.width; i++ {
+				if pixels&(1<<uint(7-i)) != 0x00 {
 					s += " █ "
 				} else {
 					s += " . "
+				}
+			}
+		}
+		s += "\n"
+	}
+	return
+}
+
+func (f *Frame) CompactString() (s string) {
+	for _, line := range f.data {
+		for j, pixels := range line {
+			for i := 0; i < 8 && j*8+i < f.width; i++ {
+				if pixels&(1<<uint(7-i)) != 0x00 {
+					s += "█"
+				} else {
+					s += "."
 				}
 			}
 		}
