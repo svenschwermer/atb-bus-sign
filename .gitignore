@@ -1,5 +1,6 @@
 /vendor/
 /bus-sign
+/sim
 debug
 debug.test
 /.vscode/

@@ -1,3 +1,5 @@
+// +build !sim
+
 package max7219
 
 import (
@@ -90,8 +92,13 @@ func (d *Device) Line(line int, patterns ...byte) error {
 	return d.spiDevice.Tx(w, nil)
 }
 
+type LineConcatenator interface {
+	ConcatenateLines() []byte
+}
+
 // Frame draws the passed concatenated lines (MSB first)
-func (d *Device) Frame(data []byte) error {
+func (d *Device) Frame(frame LineConcatenator) error {
+	data := frame.ConcatenateLines()
 	if len(data) != 8*d.cascade {
 		return fmt.Errorf("Frame data doesn't fit cascade dimensions")
 	}

@@ -55,7 +55,7 @@ func display(max *max7219.Device, c <-chan *frame.Frame) {
 		}
 		for i := 0; i < f.Width(); i++ {
 			sub := f.SubFrame(i, i+32)
-			max.Frame(sub.ConcatenateLines())
+			max.Frame(sub)
 			time.Sleep(50 * time.Millisecond)
 		}
 	}
