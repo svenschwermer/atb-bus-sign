@@ -8,11 +8,12 @@
     "io/spi",
     "io/spi/driver"
   ]
-  revision = "f5f346835693c5509c511fda7249a6f30302bf53"
+  revision = "c02f520369d4166c8c22afa8d11a96dc6ee2487b"
+  source = "github.com/svenschwermer/golang.org-x-exp"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "31a5d04c572dfcd056e66f75ab6f844f9cac8fae8c91d4920193c1088800a386"
+  inputs-digest = "8e0db05e70fc920ea3fc394ebb3201c9f46649bfdfaa7bc433c071a11a606b0c"
   solver-name = "gps-cdcl"
   solver-version = 1
