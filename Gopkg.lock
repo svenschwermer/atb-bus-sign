@@ -8,7 +8,7 @@
     "io/spi",
     "io/spi/driver"
   ]
-  revision = "c02f520369d4166c8c22afa8d11a96dc6ee2487b"
+  revision = "8026287ed771db5931f67f4b748bc9a81dfdf223"
   source = "github.com/svenschwermer/golang.org-x-exp"
 
 [solve-meta]
