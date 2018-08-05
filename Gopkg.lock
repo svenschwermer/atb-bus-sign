@@ -2,18 +2,44 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "golang.org/x/exp"
+  branch = "mips"
+  name = "periph.io/x/periph"
   packages = [
-    "io/spi",
-    "io/spi/driver"
+    ".",
+    "conn",
+    "conn/gpio",
+    "conn/gpio/gpioreg",
+    "conn/gpio/gpiostream",
+    "conn/i2c",
+    "conn/i2c/i2creg",
+    "conn/physic",
+    "conn/pin",
+    "conn/pin/pinreg",
+    "conn/spi",
+    "conn/spi/spireg",
+    "host",
+    "host/allwinner",
+    "host/am335x",
+    "host/bcm283x",
+    "host/beagle/black",
+    "host/beagle/bone",
+    "host/beagle/green",
+    "host/chip",
+    "host/cpu",
+    "host/distro",
+    "host/fs",
+    "host/odroidc1",
+    "host/pine64",
+    "host/pmem",
+    "host/rpi",
+    "host/sysfs",
+    "host/videocore"
   ]
-  revision = "c02f520369d4166c8c22afa8d11a96dc6ee2487b"
-  source = "github.com/svenschwermer/golang.org-x-exp"
+  revision = "1e5f2946ea721205aaeafd8a74a2590911cd4ca4"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8e0db05e70fc920ea3fc394ebb3201c9f46649bfdfaa7bc433c071a11a606b0c"
+  inputs-digest = "d723e1374350fca4b0aeb31d868f3d0d9f8a7d5232243c3db54200515b272222"
   solver-name = "gps-cdcl"
   solver-version = 1
