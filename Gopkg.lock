@@ -35,7 +35,7 @@
     "host/sysfs",
     "host/videocore"
   ]
-  revision = "1e5f2946ea721205aaeafd8a74a2590911cd4ca4"
+  revision = "a146365a6000bd29b25ebe53c61862ad033519cb"
 
 [solve-meta]
   analyzer-name = "dep"
