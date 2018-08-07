@@ -40,6 +40,7 @@ type Device struct {
 	spiCloser io.Closer
 	spiConn   spi.Conn
 	cascade   int
+	readBuf   []byte
 }
 
 func Open(dev string, cascade int) (*Device, error) {
@@ -57,7 +58,7 @@ func Open(dev string, cascade int) (*Device, error) {
 		return nil, err
 	}
 
-	return &Device{p, c, cascade}, nil
+	return &Device{p, c, cascade, make([]byte, 2*cascade)}, nil
 }
 
 func (d *Device) Close() error {
@@ -66,7 +67,7 @@ func (d *Device) Close() error {
 
 func (d *Device) WriteToAll(address, data byte) error {
 	w := bytes.Repeat([]byte{address, data}, d.cascade)
-	return d.spiConn.Tx(w, nil)
+	return d.spiConn.Tx(w, d.readBuf)
 }
 
 func (d *Device) Init() error {
@@ -96,7 +97,7 @@ func (d *Device) Line(line int, patterns ...byte) error {
 	for i := 0; i < d.cascade; i++ {
 		w = append(w, byte(line+1), patterns[i])
 	}
-	return d.spiConn.Tx(w, nil)
+	return d.spiConn.Tx(w, d.readBuf)
 }
 
 type LineConcatenator interface {
