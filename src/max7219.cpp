@@ -21,7 +21,8 @@ max7219::max7219(std::string device, int cascade)
     if (spi_dev_fd == -1)
         throw std::system_error(errno, std::generic_category());
 
-    if (::ioctl(spi_dev_fd, SPI_IOC_WR_MODE, &spi_mode) < 0)
+    auto mode = spi_mode;
+    if (::ioctl(spi_dev_fd, SPI_IOC_WR_MODE, &mode) < 0)
         throw std::system_error(errno, std::generic_category());
 }
 
@@ -48,7 +49,7 @@ void max7219::display(const frame &f)
 {
     auto bytes = f.concatenated_lines();
     if (bytes.size() != 8 * cascade)
-        throw 0; // TODO: create exception class
+        throw std::runtime_error(__func__);
     for (int line = 0; line < 8; ++line)
     {
         auto line_data = bytes.data() + line * cascade;
@@ -58,9 +59,11 @@ void max7219::display(const frame &f)
 
 void max7219::spi_transfer(const uint8_t *data, int length)
 {
+    std::vector<uint8_t> rx_buf(length);
     struct spi_ioc_transfer xfer;
     memset(&xfer, 0, sizeof(xfer));
     xfer.tx_buf = reinterpret_cast<uint64_t>(data);
+    xfer.rx_buf = reinterpret_cast<uint64_t>(rx_buf.data());
     xfer.len = length;
     xfer.speed_hz = speed_hz;
     xfer.bits_per_word = bits_per_word;
@@ -83,7 +86,7 @@ void max7219::write_to_all(reg r, uint8_t data)
 void max7219::display_line(int line, const uint8_t *data)
 {
     if (line < 0 || line > 7)
-        throw 0; // TODO:
+        throw std::runtime_error(__func__);
     std::vector<uint8_t> buf(2 * cascade);
     for (int i = 0; i < cascade; ++i)
     {

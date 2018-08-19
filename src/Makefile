@@ -7,9 +7,9 @@ build: container
 		mipsel-build \
 			mipsel-linux-gnu-g++ \
 			-lssl -lcrypto -lboost_system \
-			-O2 \
+			-O2 -s -static \
 			-o bus-sign \
-			max7219.cpp
+			main.cpp font.cpp frame.cpp max7219.cpp
 
 container:
 	docker build -t mipsel-build .
