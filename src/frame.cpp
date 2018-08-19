@@ -18,6 +18,13 @@ frame::frame(std::string str, size_t minimum_width)
     text(0, utf16);
 }
 
+frame::frame(int lines, int columns)
+    : data(lines)
+{
+    for (auto &line : data)
+        line.resize(columns);
+}
+
 std::vector<uint8_t> frame::concatenated_lines() const
 {
     std::vector<uint8_t> buf;
@@ -28,8 +35,8 @@ std::vector<uint8_t> frame::concatenated_lines() const
 
 frame frame::sub_frame(int start, int end) const
 {
-    frame sub(*this);
-    sub.width = end - start;
+    auto sub = duplicate();
+    auto w = end - start;
     auto shift = start % 8;
     start /= 8;
     uint8_t mask = (1 << shift) - 1;
@@ -50,34 +57,46 @@ frame frame::sub_frame(int start, int end) const
                 ++j;
             }
         }
-        line.resize((sub.width + 7) / 8); // drop whole trailing bytes
+        line.resize((w + 7) / 8); // drop whole trailing bytes
     }
+    sub.width = w;
     return sub;
 }
 
 std::string frame::string() const
 {
     std::stringstream ss;
-	for (int i = 0; i < width; ++i)
-		ss << std::setw(2) << i << ' ';
-	ss << '\n';
-	for (auto & line : data)
+    for (int i = 0; i < width; ++i)
+        ss << std::setw(2) << i << ' ';
+    ss << '\n';
+    for (auto &line : data)
     {
-        int j=0;
-		for (auto pixels : line)
+        int j = 0;
+        for (auto pixels : line)
         {
-			for (int i = 0; i < 8 && j*8+i < width; ++i)
+            for (int i = 0; i < 8 && j * 8 + i < width; ++i)
             {
-				if (pixels&(1<<(7-i)))
-					ss << u8" █ ";
-				else
-					ss << " . ";
-			}
+                if (pixels & (1 << (7 - i)))
+                    ss << u8" █ ";
+                else
+                    ss << " . ";
+            }
             ++j;
-		}
-		ss << '\n';
-	}
-	return ss.str();
+        }
+        ss << '\n';
+    }
+    return ss.str();
+}
+
+frame frame::duplicate() const
+{
+    auto dup = frame(data.size(), 2 * width);
+    for (int i = 0; i < data.size(); ++i)
+    {
+        std::copy(data.begin(), data.end(), dup.data.begin());
+        dup.modify(width, 2 * width, data);
+    }
+    return dup;
 }
 
 void frame::modify(int start, int end, const data_type &lines)
@@ -121,7 +140,7 @@ void frame::text(int pos, std::u16string str)
     }
 }
 
-std::ostream & operator<<(std::ostream &os, const frame &f)
+std::ostream &operator<<(std::ostream &os, const frame &f)
 {
     return os << f.string();
 }

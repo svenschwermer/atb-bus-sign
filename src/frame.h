@@ -22,6 +22,8 @@ struct frame
     data_type data;
     size_t width;
 
+    frame(int lines, int columns);
+    frame duplicate() const;
     void modify(int start, int end, const data_type &lines);
     void text(int pos, std::u16string str);
 };
