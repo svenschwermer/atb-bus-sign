@@ -2,6 +2,7 @@
 #define FRAME_H_
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@ struct frame
     size_t get_width() const { return this->width; }
     std::vector<uint8_t> concatenated_lines() const;
     frame sub_frame(int start, int end) const;
+    std::string string() const;
 
   private:
     data_type data;
@@ -23,5 +25,7 @@ struct frame
     void modify(int start, int end, const data_type &lines);
     void text(int pos, std::u16string str);
 };
+
+std::ostream & operator<<(std::ostream &os, const frame &f);
 
 #endif

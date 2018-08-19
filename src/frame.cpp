@@ -2,9 +2,11 @@
 #include "font.h"
 
 #include <algorithm>
+#include <codecvt>
+#include <iomanip>
 #include <iterator>
 #include <locale>
-#include <codecvt>
+#include <sstream>
 
 frame::frame(std::string str, size_t minimum_width)
     : data(font::height)
@@ -39,18 +41,43 @@ frame frame::sub_frame(int start, int end) const
             int j = 0;
             for (auto &b : line)
             {
-                b <<= shift;
                 if (j > 0)
                 {
                     auto overflow = (b >> (8 - shift)) & mask;
                     line[j - 1] |= overflow;
                 }
+                b <<= shift;
                 ++j;
             }
         }
         line.resize((sub.width + 7) / 8); // drop whole trailing bytes
     }
     return sub;
+}
+
+std::string frame::string() const
+{
+    std::stringstream ss;
+	for (int i = 0; i < width; ++i)
+		ss << std::setw(2) << i << ' ';
+	ss << '\n';
+	for (auto & line : data)
+    {
+        int j=0;
+		for (auto pixels : line)
+        {
+			for (int i = 0; i < 8 && j*8+i < width; ++i)
+            {
+				if (pixels&(1<<(7-i)))
+					ss << u8" █ ";
+				else
+					ss << " . ";
+			}
+            ++j;
+		}
+		ss << '\n';
+	}
+	return ss.str();
 }
 
 void frame::modify(int start, int end, const data_type &lines)
@@ -92,4 +119,9 @@ void frame::text(int pos, std::u16string str)
         modify(pos, pos + font::width, font::get(c));
         pos += font::width;
     }
+}
+
+std::ostream & operator<<(std::ostream &os, const frame &f)
+{
+    return os << f.string();
 }
