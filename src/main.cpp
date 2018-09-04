@@ -50,7 +50,7 @@ static void bus_sign(max7219 &max)
         {
             auto sub = f.sub_frame(i, i + 32);
             max.display(sub);
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            std::this_thread::sleep_for(50ms);
         }
     }
 }
