@@ -13,10 +13,12 @@ PKG_RELEASE:=1
 PKG_MAINTAINER:=Sven Schwermer <sven@svenschwermer.de>
 PKG_LICENSE:=GPL-2.0
 
+include $(INCLUDE_DIR)/package.mk
+
 define Package/atb-bus-sign
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  DEPENDS:=+libssl +libcrypto +libboost
+  DEPENDS:=+libpthread +boost +boost-system +libopenssl
   TITLE:=AtB Bus Sign
 endef
 
