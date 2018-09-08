@@ -93,39 +93,46 @@ static void request_departures(std::string node_id, http::response<ResponseBody>
 std::string get_bus_sign(std::string node_id, std::vector<std::string> lines,
                          std::chrono::milliseconds pre_wait)
 {
-    std::this_thread::sleep_for(pre_wait);
-
-    http::response<http::string_body> response;
-    request_departures(node_id, response);
-    std::stringstream ss(response.body());
-    auto departures = parse_departures(ss);
-
-    auto now = boost::posix_time::second_clock::local_time();
-    std::string result;
-    for (auto &line : lines)
+    try
     {
-        if (!result.empty())
-            result += " | ";
-        result += line + "->";
-        int found = 0;
-        for (const auto &departure : departures)
+        std::this_thread::sleep_for(pre_wait);
+
+        http::response<http::string_body> response;
+        request_departures(node_id, response);
+        std::stringstream ss(response.body());
+        auto departures = parse_departures(ss);
+
+        auto now = boost::posix_time::second_clock::local_time();
+        std::string result;
+        for (auto &line : lines)
         {
-            if (departure.line == line)
+            if (!result.empty())
+                result += " | ";
+            result += line + "->";
+            int found = 0;
+            for (const auto &departure : departures)
             {
-                auto d = departure.scheduled_departure_time - now;
-                auto m = (d.total_seconds() + 30) / 60;
-                if (found == 0)
-                    result += departure.destination + " " + std::to_string(m) + 'm';
-                else
-                    result += " (" + std::to_string(m) + "m)";
-                if (++found >= 2)
-                    break;
+                if (departure.line == line)
+                {
+                    auto d = departure.scheduled_departure_time - now;
+                    auto m = (d.total_seconds() + 30) / 60;
+                    if (found == 0)
+                        result += departure.destination + " " + std::to_string(m) + 'm';
+                    else
+                        result += " (" + std::to_string(m) + "m)";
+                    if (++found >= 2)
+                        break;
+                }
             }
+            if (found == 0)
+                result += '?';
         }
-        if (found == 0)
-            result += '?';
+        return result;
     }
-    return result;
+    catch (const std::exception &e)
+    {
+        return e.what();
+    }
 }
 
 static std::vector<departure> parse_departures(std::istream &resp)
