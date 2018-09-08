@@ -16,6 +16,7 @@
 #include <locale>
 #include <string>
 #include <sstream>
+#include <thread>
 
 namespace http = boost::beast::http;
 
@@ -89,9 +90,11 @@ static void request_departures(std::string node_id, http::response<ResponseBody>
     stream.shutdown(ec);
 }
 
-std::string get_bus_sign(std::string node_id, std::initializer_list<std::string> lines,
+std::string get_bus_sign(std::string node_id, std::vector<std::string> lines,
                          std::chrono::milliseconds pre_wait)
 {
+    std::this_thread::sleep_for(pre_wait);
+
     http::response<http::string_body> response;
     request_departures(node_id, response);
     std::stringstream ss(response.body());
@@ -112,7 +115,7 @@ std::string get_bus_sign(std::string node_id, std::initializer_list<std::string>
                 auto d = departure.scheduled_departure_time - now;
                 auto m = (d.total_seconds() + 30) / 60;
                 if (found == 0)
-                    result += departure.destination + std::to_string(m) + 'm';
+                    result += departure.destination + " " + std::to_string(m) + 'm';
                 else
                     result += " (" + std::to_string(m) + "m)";
                 if (++found >= 2)

@@ -1,1 +1,4 @@
 /.vscode/
+*.o
+atb-bus-sign
+sim
