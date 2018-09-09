@@ -24,7 +24,7 @@ $ git clone https://github.com/openwrt/openwrt.git
 $ cd openwrt
 $ git checkout v18.06.1
 $ cp feeds.conf{.default,}
-$ echo "src-git atb-bus-sign https://github.com/svenschwermer/atb-bus-sign.git" >> feeds.conf
+$ echo "src-git bus https://github.com/svenschwermer/atb-bus-sign.git" >> feeds.conf
 $ ./scripts/feeds update -a
 $ ./scripts/feeds install -a
 $ curl -o .config https://raw.githubusercontent.com/svenschwermer/atb-bus-sign/cpp/openwrt-v18.06.1-config
