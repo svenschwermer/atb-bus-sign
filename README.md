@@ -7,14 +7,18 @@ _Scrolling LED bus sign for Trondheim based AtB bus stops._
 * 32×8 LED matrix display with 4 daisy-chained [MAX7219](https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf)-compatible controllers
 
 ```
-LinkIt Smart 7688       Display
-+---------------+       +-----+
-|            5V |<----->| VCC |
-|           GND |<----->| GND |
-| P22, SPI_MOSI |<----->| DIN |
-|  P25, SPI_CS1 |<----->| CS  |
-|  P24, SPI_CLK |<----->| CLK |
-+---------------+       +-----+
+LinkIt Smart 7688                      Display
+┌───────────────┐                      ┌─────┐
+│            5V ├──────────────────────┤ VCC │
+│           GND ├──────────────────────┤ GND │
+│           3V3 ├──────────┐           │     │
+│               │         ┌┴┐          │     │
+│               │     10k │R│          │     │
+│               │         └┬┘          │     │
+│  P25, SPI_CS1 ├──────────┴───────────┤ CS  │
+│  P24, SPI_CLK ├──────────────────────┤ CLK │
+│ P22, SPI_MOSI ├──────────────────────┤ DIN │
+└───────────────┘                      └─────┘
 ```
 
 ## Software
