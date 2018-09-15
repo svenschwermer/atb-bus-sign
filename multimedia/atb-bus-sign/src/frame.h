@@ -24,7 +24,7 @@ private:
   frame(int lines, int columns);
   frame duplicate() const;
   void modify(int start, int end, const data_type &lines);
-  void text(int pos, std::u16string str);
+  void text(int pos, std::u32string str);
 };
 
 std::ostream &operator<<(std::ostream &os, const frame &f);

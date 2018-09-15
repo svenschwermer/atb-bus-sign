@@ -9,13 +9,12 @@
 #include <sstream>
 
 frame::frame(std::string str, size_t minimum_width) : data(font::height) {
-  auto utf16 =
-      std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
-          .from_bytes(str.data());
-  width = std::max(utf16.length() * font::width, minimum_width);
+  using codecvt = std::codecvt_utf8<char32_t>;
+  auto utf32 = std::wstring_convert<codecvt, char32_t>{}.from_bytes(str);
+  width = std::max(utf32.length() * font::width, minimum_width);
   for (auto &line : data)
     line.resize(width);
-  text(0, utf16);
+  text(0, utf32);
 }
 
 frame::frame(int lines, int columns) : data(lines) {
@@ -114,7 +113,7 @@ void frame::modify(int start, int end, const data_type &lines) {
   }
 }
 
-void frame::text(int pos, std::u16string str) {
+void frame::text(int pos, std::u32string str) {
   for (auto c : str) {
     modify(pos, pos + font::width, font::get(c));
     pos += font::width;

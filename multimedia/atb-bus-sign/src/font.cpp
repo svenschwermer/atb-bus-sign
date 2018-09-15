@@ -1,6 +1,26 @@
 #include "font.h"
 
-const font::glyph_type &font::get(char16_t c) { return charmap[c - offset]; }
+const font::glyph_type &font::get(char32_t c) {
+  if (c >= offset && c <= (U'~' - offset))
+    return charmap[c - offset];
+
+  switch (c) {
+  case U'æ':
+    return charmap[0x7f - offset];
+  case U'ø':
+    return charmap[0x80 - offset];
+  case U'å':
+    return charmap[0x81 - offset];
+  case U'Æ':
+    return charmap[0x82 - offset];
+  case U'Ø':
+    return charmap[0x83 - offset];
+  case U'Å':
+    return charmap[0x84 - offset];
+  default:
+    return charmap[U' ' - offset]; // space
+  }
+}
 
 const std::vector<font::glyph_type> font::charmap{
     {{0x00},

@@ -10,7 +10,7 @@ struct font {
   static const int width = 6; // includes spacing to the right
   static const int height = 8;
 
-  static const glyph_type &get(char16_t c);
+  static const glyph_type &get(char32_t c);
 
 private:
   static const int offset = 0x20;
