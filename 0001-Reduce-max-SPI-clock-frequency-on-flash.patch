@@ -1,0 +1,36 @@
+From 45a56caac5e0b79017afc0e3baa479d1588e0eba Mon Sep 17 00:00:00 2001
+From: Sven Schwermer <sven@svenschwermer.de>
+Date: Sun, 16 Sep 2018 15:32:36 +0200
+Subject: [PATCH] Reduce max SPI clock frequency on flash
+
+This solves signal integrity problems when there are long traces hooked
+up to the CLK and MOSI lines that are shared with the SPI flash.
+---
+ target/linux/ramips/dts/LINKIT7688.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/target/linux/ramips/dts/LINKIT7688.dts b/target/linux/ramips/dts/LINKIT7688.dts
+index a81a2d5..e5135bc 100644
+--- a/target/linux/ramips/dts/LINKIT7688.dts
++++ b/target/linux/ramips/dts/LINKIT7688.dts
+@@ -100,7 +100,7 @@
+ 		#size-cells = <1>;
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0>;
+-		spi-max-frequency = <40000000>;
++		spi-max-frequency = <1000000>;
+ 		m25p,chunked-io = <31>;
+ 
+ 		partition@0 {
+@@ -131,7 +131,7 @@
+ 		#size-cells = <1>;
+ 		compatible = "linux,spidev";
+ 		reg = <1>;
+-		spi-max-frequency = <40000000>;
++		spi-max-frequency = <1000000>;
+ 	};
+ };
+ 
+-- 
+1.9.1
+
