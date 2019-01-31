@@ -13,7 +13,7 @@ template <typename DisplayFunc> static void bus_sign(DisplayFunc display) {
   using namespace std::chrono_literals;
   using namespace std::string_literals;
 
-  std::vector<std::string> lines = {"11", "19"};
+  std::vector<std::string> lines = {"11"};
   auto poll = [lines](std::chrono::milliseconds pre_wait) {
     return std::async(std::launch::async, get_bus_sign, "16011297"s, lines,
                       pre_wait);
