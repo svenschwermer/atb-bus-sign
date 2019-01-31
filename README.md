@@ -32,15 +32,7 @@ LinkIt Smart 7688                      Display
 ## Software
 This software has been tested with OpenWrt v18.06.1. To build the entire image, do the following:
 ```
-$ git clone https://github.com/openwrt/openwrt.git
-$ cd openwrt
-$ git checkout v18.06.1
-$ cp feeds.conf{.default,}
-$ echo "src-git bus https://github.com/svenschwermer/atb-bus-sign.git" >> feeds.conf
-$ ./scripts/feeds update -a
-$ ./scripts/feeds install -a
-$ curl -o .config https://raw.githubusercontent.com/svenschwermer/atb-bus-sign/cpp/openwrt-v18.06.1-config
-$ make
+$ ./build.sh
 ```
 
 ## Housing
